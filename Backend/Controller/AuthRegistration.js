@@ -1,4 +1,4 @@
-const { Registration } = require("../MongoDb/models/Register");
+const Registration = require("../MongoDb/models/Register");
 
 var jwt = require("jsonwebtoken");
 const { ObjectId } = require("mongoose").Types;
@@ -7,8 +7,10 @@ const { ObjectId } = require("mongoose").Types;
 
 const bcrypt = require("bcrypt");
 const { mongo } = require("mongoose");
+const { author, books } = require("../MongoDb/models/Author");
 
 exports.AuthRegistration = async (req, res) => {
+  console.log("registration");
   try {
     const { email } = req.body;
     const userEmail = await Registration.findOne({ email: email });
@@ -25,11 +27,11 @@ exports.AuthRegistration = async (req, res) => {
     // })
 
     const password = req.body.password;
-    const Confirmpassword = req.body.Confirmpassword;
+    const Confirmpassword = req.body.confirmpassword;
 
     if (password === Confirmpassword) {
       const passwordHash = await bcrypt.hash(password, 10);
-      const Register = new Registration({
+      const Register = await new Registration({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         email: req.body.email,
@@ -50,17 +52,19 @@ exports.AuthRegistration = async (req, res) => {
   }
 };
 
+/////////////////////////////--------------------------------------------------------------------------------------------------------////////////////////
+
 exports.AuthLogin = async (req, res, next) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return next("password and username both are required...");
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next("password and email both are required...");
   }
 
   try {
-    const user = await Registration.findOne({ username: req.body.username });
+    const user = await Registration.findOne({ email: req.body.email });
 
-    if (!user)
-      return res.status(400).json({ error: "Username is not match...." });
+    if (!user) return res.status(400).json({ error: "Email is not match...." });
 
     const comparePassword = await bcrypt.compare(
       req.body.password,
@@ -106,5 +110,80 @@ exports.AuthLogin = async (req, res, next) => {
     console.log(err);
     alert(err.message);
     return next("error : ", err);
+  }
+};
+////////////------------------------------------------------------------------------------////////////////////////////////////////////////
+
+exports.Dashboard = async (req, res) => {
+  res.send("dashboard");
+};
+
+///--------------------------------------------------------------------------------------------------------------------------------------///////////////////////
+
+exports.Author = async (req, res) => {
+  try {
+    const { name, age, dob } = req.body;
+
+    const AddAuthor = new author({
+      name: name,
+      age: age,
+      dob: dob,
+    });
+    const save = await AddAuthor.save();
+    if (save) {
+      return res.status(200).json({ message: "Data save successfully..." });
+    }
+    console.log(save);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+//////////////---------------------------------------------------------------------------------------------------------------------------//////////////////////
+
+exports.Books = async (req, res) => {
+  try {
+    const { name, publish, price, user_id } = req.body;
+    const AddBook = new books({
+      user_id: user_id,
+      name: name,
+      publish: publish,
+      price: price,
+    });
+
+    const save = await AddBook.save();
+    const user = await author.findOne({ user_id });
+
+    console.log("save wala data", save);
+
+    console.log("id", user);
+
+    user.Books.push(save);
+    const d = await user.save();
+    console.log(d);
+
+    const add = await author
+      .findOne({ user: user_id })
+      .populate("Books")
+      .exec(); // key to populate
+
+    console.log("Add wala data", add);
+
+    if (add) {
+      return res.status(200).json({ message: add });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.Delete = async (req, res, next) => {
+  const { user_id } = req.body;
+  try {
+    const del = await author.findOneAndDelete({ user: user_id });
+    res.status(200).json({ message: `dlete sucessfully ${del}` });
+    console.log(del);
+  } catch (err) {
+    console.log(err);
   }
 };

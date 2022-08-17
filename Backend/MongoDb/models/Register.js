@@ -21,10 +21,6 @@ const UserRegister = new mongoose.Schema({
     type: String,
     required: true,
   },
-  resetLink: {
-    data: String,
-    default: "",
-  },
 });
 
 const Registration = new mongoose.model("users", UserRegister);
