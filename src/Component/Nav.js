@@ -13,7 +13,7 @@ export const MyNavbar = () => {
   };
 
   const SignupClick = () => {
-    navigate("/Signup");
+    navigate("/Registration");
   };
 
   const HomeClick = () => {

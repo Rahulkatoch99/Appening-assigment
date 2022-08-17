@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
+import { useNavigate } from "react-router-dom";
 
 export const Logincard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
 
   const HandelChange = (e) => {
     const { id, value } = e.target;
@@ -18,44 +21,41 @@ export const Logincard = () => {
     }
   };
 
-  const HandelSubmit = async () => {
-    try {
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-
-      var raw = JSON.stringify({
+  const HandelSubmit = (e) => {
+    if (email || password) {
+      var axios = require("axios");
+      var data = JSON.stringify({
         email: email,
         password: password,
       });
-
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
+      var config = {
+        method: "post",
+        url: "http://localhost:8000/Login",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: data,
       };
-
-      const response = await fetch(
-        "http://localhost:8000/Login",
-        requestOptions
-      );
-      if (!response.ok) {
-        const err = await response.json();
-        alert(err.error);
-        return;
-      }
-
-      const result = await response.json();
-      console.log(result);
-    } catch (err) {
-      console.log(err);
+      axios(config).then(function (response) {
+        console.log(JSON.stringify(response.data));
+      });
+      Dashboard().catch(function (error) {
+        console.log(error);
+      });
+    } else {
+      alert("please enter email or password");
     }
   };
+
+  const Dashboard = () => {
+    navigate("/Dashboard");
+  };
+
   return (
     <div className="d-flex justify-content-center">
       <Card>
         <Card.Body>
-          <Form>
+          <Form onSubmit={(e) => HandelSubmit()}>
             <Form.Group className="mb-3" controlId="email">
               <Form.Label>Email address</Form.Label>
               <Form.Control
@@ -76,15 +76,11 @@ export const Logincard = () => {
               />
             </Form.Group>
 
-            <Button
-              onClick={() => HandelSubmit()}
-              variant="primary"
-              type="submit"
-            >
+            <Button variant="primary" type="submit">
               Submit
             </Button>
           </Form>
-          <a href=""> Forget password</a>
+          {/* <a> Forget password</a> */}
         </Card.Body>
       </Card>
     </div>

@@ -2,11 +2,8 @@ import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 
 import Form from "react-bootstrap/Form";
-import { useNavigate } from "react-router-dom";
 
-var axios = require("axios");
-
-export const SignupCard = () => {
+export const Dashboard = () => {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [username, setUsername] = useState("");
@@ -14,8 +11,6 @@ export const SignupCard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
-
-  const navigate = useNavigate();
 
   const HandelChange = (e) => {
     const { id, value } = e.target;
@@ -41,105 +36,12 @@ export const SignupCard = () => {
     }
   };
 
-  const HandelSubmit = (e) => {
-    if (
-      firstname ||
-      lastname ||
-      email ||
-      username ||
-      password ||
-      confirmpassword
-    ) {
-      var data = JSON.stringify({
-        firstname: firstname,
-        lastname: lastname,
-        email: email,
-        username: username,
-        password: password,
-        confirmpassword: confirmpassword,
-      });
-
-      var config = {
-        method: "post",
-        url: "http://localhost:8000/Registration",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: data,
-      };
-
-      axios(config).then(function (response) {
-        console.log(JSON.stringify(response.data));
-      });
-      login().catch(function (error) {
-        console.log(error);
-      });
-    } else {
-      alert("please enter all field correctly");
-    }
-
-    //------------------------------------------------------------------------------------------------------------------------------/////////////////////////
-    // try {
-    //   console.log("try");
-    //   var myHeaders = new Headers();
-    //   myHeaders.append("Content-Type", "application/json");
-
-    //   var raw = JSON.stringify({
-    //     firstname: firstname,
-    //     lastname: lastname,
-    //     username: username,
-    //     email: email,
-    //     password: password,
-    //     confirmpassword: confirmpassword,
-    //   });
-
-    //   var requestOptions = {
-    //     method: "POST",
-    //     headers: myHeaders,
-    //     body: raw,
-    //     redirect: "follow",
-    //   };
-
-    //   const response = await fetch(
-    //     "https://localhost:8000/Registration",
-    //     requestOptions
-    //   );
-    //   if (!response.ok) {
-    //     const err = await response.json();
-    //     alert(err.error);
-    //     return;
-    //   }
-    //   const result = await response.json();
-    //   console.log(result);
-    //   login();
-    // } catch (err) {
-    //   console.log(err);
-    // }
-  };
-
-  const login = () => {
-    navigate("/Login");
-  };
-
   return (
     <div className="container">
       <div className="row">
-        <div className="col">
-          <div className="py-5">
-            <div className="d-flex justify-content-center">
-              <div className="p-2  d-sm-block">
-                <img
-                  src="Registration.jpg"
-                  width={"90%"}
-                  alt="Registration"
-                  className="img-fluid"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
         <div className="col-md-4">
-          <div className=" p-3 bg-dark text-white">
+          <h3> Books and author </h3>
+          <div className=" p-2  text-white">
             <Form>
               <Form.Group className="mb-3" controlId="firstname">
                 <Form.Label>First Name</Form.Label>
@@ -198,15 +100,10 @@ export const SignupCard = () => {
                 />
               </Form.Group>
 
-              <Button onClick={HandelSubmit} variant="primary" type="submit">
+              <Button variant="primary" type="submit">
                 Submit
               </Button>
             </Form>
-
-            <Button onClick={HandelSubmit} type="submit">
-              {" "}
-              Sub
-            </Button>
           </div>
         </div>
       </div>
