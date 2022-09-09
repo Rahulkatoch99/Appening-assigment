@@ -31,6 +31,6 @@ const verifyToken = (req, res, next) => {
     next();
   }
 };
-//---------------------------------------- End of Login Verify-------------------------/////
+//---------------------------------------- End of Login Verify-------------------------//////
 
 module.exports = verifyToken;
